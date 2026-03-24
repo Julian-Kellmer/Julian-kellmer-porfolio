@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
+import Image from 'next/image'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -19,10 +20,12 @@ const AboutMePage = () => {
     {
       text: (
         <span className='text-h4'>
-          <img
+          <Image
             src='/SemilleroDelMundo.svg'
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
             alt=''
+            width={20}
+            height={20}
+            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
           />
           Hincha del Semillero del Mundo
         </span>
@@ -33,10 +36,12 @@ const AboutMePage = () => {
       text: (
         <span className='text-h4'>
           Already an{' '}
-          <img
+          <Image
             src='/IronMan.svg'
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
             alt=''
+            width={20}
+            height={20}
+            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
           />{' '}
           Iron Man
         </span>
@@ -46,10 +51,12 @@ const AboutMePage = () => {
     {
       text: (
         <span className='text-h4'>
-          <img
+          <Image
             src='/Adonis.svg'
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
             alt=''
+            width={20}
+            height={20}
+            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
           />{' '}
           Padre de Adonis
         </span>
@@ -60,10 +67,12 @@ const AboutMePage = () => {
       text: (
         <span className='text-h4'>
           Fanatico de{' '}
-          <img
+          <Image
             src='/apple.svg'
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
             alt=''
+            width={20}
+            height={20}
+            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
           />{' '}
           Steve Jobs
         </span>
@@ -73,10 +82,12 @@ const AboutMePage = () => {
     {
       text: (
         <span className='text-h4'>
-          <img
+          <Image
             src='/Libros.svg'
-            className='inline-block w-[1.1em] h-[1.1em] mx-1 -mt-2'
             alt=''
+            width={20}
+            height={20}
+            className='inline-block w-[1.1em] h-[1.1em] mx-1 -mt-2'
           />{' '}
           Lector de biografias
         </span>
@@ -152,10 +163,11 @@ const AboutMePage = () => {
           </section>
           <section className='absolute inset-0 w-full h-full  flex items-center justify-center -z-10 '>
             <div className=' bg-white flex items-center w-2/3  h-2/3  justify-center relative overflow-hidden'>
-              <img
+              <Image
                 src='/images/hero.JPEG'
-                alt='GIF'
-                className='w-full h-full object-cover  '
+                alt='hero'
+                fill
+                className='object-cover'
               />
             </div>
           </section>
@@ -168,14 +180,13 @@ const AboutMePage = () => {
         className='relative z-20 w-full layout-grid h-[100svh] bg-bg-secondary overflow-hidden'>
         <div className='col-span-5 relative h-full w-full '>
           {aboutMeItems.map((item, index) => (
-            <img
+            <div
               key={index}
-              src={item.image}
-              className={`absolute top-0 left-0 object-cover h-full w-full transition-opacity duration-500 ease-in-out ${
+              className={`absolute top-0 left-0 h-full w-full transition-opacity duration-500 ease-in-out ${
                 hoveredIndex === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
-              }`}
-              alt=''
-            />
+              }`}>
+              <Image src={item.image} fill alt='' className='object-cover' />
+            </div>
           ))}
         </div>
         <div className='col-span-7 flex flex-col justify-start pt-8 pr-8 h-full z-20 pointer-events-none'>
@@ -208,11 +219,12 @@ const AboutMePage = () => {
             </h2>
           </div>
 
-          <div className='w-full max-w-[300px] h-[350px] overflow-hidden mix-blend-darken opacity-90 pb-8'>
-            <img
+          <div className='w-full max-w-[300px] h-[350px] overflow-hidden mix-blend-darken opacity-90 pb-8 relative'>
+            <Image
               src='/images/AboutMe.gif'
-              className='w-full h-full object-cover grayscale'
               alt='illustration placeholder'
+              fill
+              className='object-cover grayscale'
             />
           </div>
         </div>

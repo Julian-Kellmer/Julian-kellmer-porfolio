@@ -201,11 +201,11 @@ export default function HorizontalGallery() {
                   minHeight: i % 2 === 0 ? '300px' : '400px',
                 }}>
                 <div className='js-gallery-card-inner relative w-full h-full overflow-hidden bg-gray-200 origin-center will-change-transform'>
-                  <img
+                  <Image
                     src={item.img}
                     alt=''
-                    draggable={false}
-                    className='absolute inset-0 w-full h-full object-cover pointer-events-none'
+                    fill
+                    className='object-cover pointer-events-none'
                   />
                 </div>
               </div>

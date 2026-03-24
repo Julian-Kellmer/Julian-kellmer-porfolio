@@ -1,6 +1,7 @@
 import { getProjects, getProjectBySlug } from '../../../lib/supabase'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import BackToGallery from './BackToGallery'
 import RevealContainer from '@/src/components/RevealContainer'
 
@@ -75,11 +76,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             (image, index) => (
               <div
                 key={index}
-                className='w-full aspect-[16/9] overflow-hidden'>
-                <img
+                className='w-full aspect-[16/9] overflow-hidden relative'>
+                <Image
                   src={image}
                   alt={project.title}
-                  className='w-full h-full object-cover'
+                  fill
+                  className='object-cover'
                 />
               </div>
             ),

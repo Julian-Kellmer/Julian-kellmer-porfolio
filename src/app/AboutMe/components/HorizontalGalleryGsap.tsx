@@ -250,11 +250,11 @@ export default function HorizontalGalleryGsap() {
                     willChange: 'transform',
                   }}>
                   <div className='js-gsap-card-media relative w-full h-full overflow-hidden bg-gray-200'>
-                    <img
+                    <Image
                       src={item.img}
                       alt=''
-                      draggable={false}
-                      className='js-gsap-card-img absolute inset-0 w-full h-full object-cover pointer-events-none'
+                      fill
+                      className='js-gsap-card-img object-cover pointer-events-none'
                       style={{ willChange: 'transform' }}
                     />
                   </div>
