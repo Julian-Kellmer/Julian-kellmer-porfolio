@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
       { hostname: '*.supabase.co' },
     ],
   },
+  turbopack: {
+    rules: {
+      '*.{glsl,vs,fs,vert,frag}': {
+        loaders: ['raw-loader'],
+        as: '*.js',
+      },
+    },
+  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
