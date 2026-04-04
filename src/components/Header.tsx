@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import styles from './Header.module.css'
 import TransitionLink from './TransitionLink'
+import { usePathname } from 'next/navigation'
 
 const navLinks = [
   { label: 'Acerca de mí', href: '/AboutMe' },
@@ -14,6 +15,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
   const [linksVisible, setLinksVisible] = useState(false)
+  const pathname = usePathname()
 
   // Lock scroll + freeze WebGL canvas while menu is open
   useEffect(() => {
@@ -60,26 +62,32 @@ const Header = () => {
       <header
         className={`${styles.header} ${menuOpen ? styles.headerMenuOpen : ''}`}>
 
-        {/* Mobile: 3 equal cols — Contact | Logo | Menu */}
-        {/* Desktop: Logo left, buttons right */}
-
-        {/* ── Mobile: Contact (left) ── hidden on desktop */}
+        {/* ── Contact (Left) ── */}
         <button
-          className={`${styles.menuBtn} ${contactOpen ? styles.menuBtnOpen : ''} flex-1 text-body  text-secondary md:hidden`}
-
+          className={`${styles.menuBtn} ${contactOpen ? styles.menuBtnOpen : ''} text-body text-secondary`}
+          style={{ flex: 1, display: 'flex', alignItems: 'flex-start' }}
           onClick={() => { setContactOpen(true); setMenuOpen(false) }}
           aria-label='Open Contact'>
           <span className={styles.menuLabel}>Contact</span>
         </button>
 
-        {/* ── Logo: center on mobile, left on desktop ── */}
+        {/* ── Logo (Center) ── */}
         <div
           className={styles.logoWrapper}
           style={{ flex: 1, display: 'flex', justifyContent: 'center' }}
-          /* desktop overrides via md: below */
         >
-          {/* on desktop push logo to the left inside its flex-1 slot */}
-          <div className='md:mr-auto'>
+          {pathname === '/' ? (
+            <div onClick={handleClose} className="cursor-default">
+              <Image
+                src='/logoTerminado.svg'
+                alt='Julian Kellmer logo'
+                width={64}
+                height={64}
+                priority
+                className={styles.logo}
+              />
+            </div>
+          ) : (
             <TransitionLink href='/' onClick={handleClose}>
               <Image
                 src='/logoTerminado.svg'
@@ -90,30 +98,13 @@ const Header = () => {
                 className={styles.logo}
               />
             </TransitionLink>
-          </div>
+          )}
         </div>
 
-        {/* ── Desktop right cluster ── hidden on mobile */}
-        <div className='hidden md:flex gap-4'>
-          <button
-            className={`${styles.menuBtn} ${contactOpen ? styles.menuBtnOpen : ''} text-body text-secondary`}
-            onClick={() => { setContactOpen(true); setMenuOpen(false) }}
-            aria-label='Open Contact'>
-            <span className={styles.menuLabel}>Contact</span>
-          </button>
-          <button
-            className={`${styles.menuBtn} ${menuOpen ? styles.menuBtnOpen : ''} text-body text-secondary`}
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}>
-            <span className={styles.menuLabel}>{menuOpen ? 'Close Menu' : 'Open Menu'}</span>
-          </button>
-        </div>
-
-        {/* ── Mobile: Menu (right) ── hidden on desktop */}
+        {/* ── Menu (Right) ── */}
         <button
-          className={`${styles.menuBtn} ${menuOpen ? styles.menuBtnOpen : ''} text-body text-secondary md:hidden`}
-          style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', paddingRight: 0 }}
+          className={`${styles.menuBtn} ${menuOpen ? styles.menuBtnOpen : ''} text-body text-secondary`}
+          style={{ flex: 1, display: 'flex', alignItems: 'flex-end', paddingRight: 0 }}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}>
