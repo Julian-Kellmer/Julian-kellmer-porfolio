@@ -21,9 +21,11 @@
 /* ─── Header ─────────────────────────────────────────────────────────────── */
 /*   "All projects"  ·············  "86 projects"                             */
 .listHeader {
-  padding-top: 160px; 
-  padding-bottom: 120px; 
-    /* ← espacio desde el top del overlay hasta el título */
+  min-height: 40svh;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 40px;
+  position: relative;
 }
 
 /* "All projects" — big left title */
@@ -65,19 +67,16 @@
 }
 
 /* ─── Individual project row ──────────────────────────────────────────────── */
-/*   Three-column grid: title | tags | client                                  */
-/* ──────────────────────────────────────────────────────────────────────────
-   📍 PARA EDITAR CADA FILA:
-   Archivo: ProjectList.module.css  →  class .projectRow
-   ────────────────────────────────────────────────────────────────────────── */
+/*   Two equal columns: [title + tags] | [client]                              */
+/*   Mobile: left column hidden, right shows client + year                     */
 .projectRow {
-  display: grid;
-  grid-template-columns: 1fr auto auto;   /* título | tags | cliente */
+  display: flex;
   align-items: center;
   gap: 32px;
   padding: 16px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   cursor: pointer;
+  text-decoration: none;
 
   /* Stagger animation start state */
   opacity: 0;
@@ -103,27 +102,37 @@
   color: rgba(225, 225, 225, 0.4);
 }
 
-/* ─── Row cells ───────────────────────────────────────────────────────────── */
+/* ─── Row columns ─────────────────────────────────────────────────────────── */
 
-/* ──────────────────────────────────────────────────────────────────────────
-   📍 PARA EDITAR TÍTULO:
-   Archivo: ProjectList.module.css  →  class .rowTitle
-   ────────────────────────────────────────────────────────────────────────── */
+/* Left: title + tags — desktop only */
+.rowLeft {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Right: client (+ year on mobile) */
+.rowRight {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
 .rowTitle {
   color: var(--color-text);
   transition: color 0.2s ease;
-  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   📍 PARA EDITAR TAGS:
-   Archivo: ProjectList.module.css  →  classes .rowTags / .tag
-   ────────────────────────────────────────────────────────────────────────── */
 .rowTags {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 5px;
+  display: none;
 }
 
 .tag {
@@ -133,15 +142,46 @@
   white-space: nowrap;
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   📍 PARA EDITAR CLIENTE:
-   Archivo: ProjectList.module.css  →  class .rowClient
-   ────────────────────────────────────────────────────────────────────────── */
 .rowClient {
   font-size: 0.8rem;
   font-weight: 400;
   color: rgba(225, 225, 225, 0.45);
-  text-align: right;
   white-space: nowrap;
-  min-width: 80px;
+}
+
+/* Year — shown in row on both desktop and mobile */
+.rowYear {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(225, 225, 225, 0.45);
+  white-space: nowrap;
+}
+
+/* ─── Mobile overrides (< 768px) ──────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Hide the year group sidebar label — year moves into each row */
+  .yearLabel {
+    display: none;
+  }
+
+  /* yearRows spans the full width when yearLabel is gone */
+  .yearRows {
+    grid-column: 1 / -1;
+  }
+
+  /* Hide left column (title + tags) */
+  .rowLeft {
+    display: none;
+  }
+
+  /* Right column: client left, year right */
+  .rowRight {
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  /* Show year inside row */
+  .rowYear {
+    display: block;
+  }
 }

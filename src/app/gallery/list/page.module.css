@@ -1,0 +1,160 @@
+.page {
+  min-height: 100vh;
+  padding-bottom: 120px;
+}
+
+/* ─── View Toggle — mirrors InfinityGallery toggle ─────────────────────────── */
+.viewToggle {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 6px;
+}
+
+.toggleOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+  text-decoration: none;
+}
+
+.toggleOption svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.toggleOptionActive {
+  background: rgba(255, 255, 255, 0.92);
+  color: #141414;
+  cursor: default;
+}
+
+.toggleOption:not(.toggleOptionActive):hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ─── Expand icon ─────────────────────────────────────────────────────────── */
+.expandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.35);
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+}
+
+.expandIconOpen {
+  transform: rotate(45deg);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ─── Accordion ───────────────────────────────────────────────────────────── */
+
+/* Height animation: grid-rows trick (no JS height calc needed) */
+.expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expandableOpen {
+  grid-template-rows: 1fr;
+}
+
+/* Inner wrapper must have overflow:hidden for the trick to work */
+.expandableInner {
+  overflow: hidden;
+}
+
+/* Padding animates separately so content doesn't pop */
+.expandContent {
+  padding: 0 0 0;
+  transition: padding 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.expandableOpen .expandContent {
+  padding: 32px 0 48px;
+}
+
+/* ── Description ── */
+.expandDescription {
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 65ch;
+  margin: 0 0 32px;
+}
+
+.expandTagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.expandTag {
+  font-size: 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 3px 10px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: capitalize;
+}
+
+.expandSeeLiveRow {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.expandSeeLive {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.expandSeeLive:hover {
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Photos ── */
+.expandPhotos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.expandPhoto {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 767px) {
+  .expandPhotos {
+    grid-template-columns: 1fr;
+  }
+}

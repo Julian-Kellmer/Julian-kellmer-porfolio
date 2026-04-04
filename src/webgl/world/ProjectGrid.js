@@ -14,11 +14,12 @@ export default class ProjectGrid {
     // Grid configuration
     this.columns = 11;
     this.rows = 11;
-    // 16:9
-    this.planeWidth = 4.26;
-    this.planeHeight = 2.2;
-    this.gapX = 2.0;
-    this.gapY = 0.5;
+    // 16:9 — scale down on mobile
+    const isMobile = this.experience.sizes.width < 768;
+    this.planeWidth  = isMobile ? 2.2  : 4.26;
+    this.planeHeight = isMobile ? 1.14 : 2.2;
+    this.gapX = isMobile ? 1.0 : 2.0;
+    this.gapY = isMobile ? 0.3 : 0.5;
 
     this.totalWidth = this.columns * (this.planeWidth + this.gapX);
     this.totalHeight = this.rows * (this.planeHeight + this.gapY);

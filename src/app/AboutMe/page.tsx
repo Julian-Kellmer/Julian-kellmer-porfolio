@@ -1,32 +1,27 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import HorizontalGallery from './components/HorizontalGallery'
 import RevealContainer from '@/src/components/RevealContainer'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const AboutMePage = () => {
-  const containerRef = useRef<HTMLElement>(null)
-  const heroRef = useRef<HTMLDivElement>(null)
+  const containerRef   = useRef<HTMLElement>(null)
+  const heroRef        = useRef<HTMLDivElement>(null)
   const nextSectionRef = useRef<HTMLElement>(null)
-  const [hoveredIndex, setHoveredIndex] = useState<number>(0)
+  const textRefs       = useRef<(HTMLDivElement | null)[]>([])
+  const imageRefs      = useRef<(HTMLDivElement | null)[]>([])
 
   const aboutMeItems = [
     {
       text: (
         <span className='text-h4'>
-          <Image
-            src='/SemilleroDelMundo.svg'
-            alt=''
-            width={20}
-            height={20}
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
-          />
+          <Image src='/SemilleroDelMundo.svg' alt='' width={20} height={20}
+            className='inline-block w-[1em] h-[1em] mx-1 -mt-2' />
           Hincha del Semillero del Mundo
         </span>
       ),
@@ -36,13 +31,8 @@ const AboutMePage = () => {
       text: (
         <span className='text-h4'>
           Already an{' '}
-          <Image
-            src='/IronMan.svg'
-            alt=''
-            width={20}
-            height={20}
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
-          />{' '}
+          <Image src='/IronMan.svg' alt='' width={20} height={20}
+            className='inline-block w-[1em] h-[1em] mx-1 -mt-2' />{' '}
           Iron Man
         </span>
       ),
@@ -51,14 +41,7 @@ const AboutMePage = () => {
     {
       text: (
         <span className='text-h4'>
-          <Image
-            src='/Adonis.svg'
-            alt=''
-            width={20}
-            height={20}
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
-          />{' '}
-          Padre de Adonis
+              Padre de Adonis
         </span>
       ),
       image: '/images/Ado.JPEG',
@@ -67,13 +50,8 @@ const AboutMePage = () => {
       text: (
         <span className='text-h4'>
           Fanatico de{' '}
-          <Image
-            src='/apple.svg'
-            alt=''
-            width={20}
-            height={20}
-            className='inline-block w-[1em] h-[1em] mx-1 -mt-2'
-          />{' '}
+          <Image src='/apple.svg' alt='' width={20} height={20}
+            className='inline-block w-[1em] h-[1em] mx-1 -mt-2' />{' '}
           Steve Jobs
         </span>
       ),
@@ -82,13 +60,6 @@ const AboutMePage = () => {
     {
       text: (
         <span className='text-h4'>
-          <Image
-            src='/Libros.svg'
-            alt=''
-            width={20}
-            height={20}
-            className='inline-block w-[1.1em] h-[1.1em] mx-1 -mt-2'
-          />{' '}
           Lector de biografias
         </span>
       ),
@@ -117,109 +88,167 @@ const AboutMePage = () => {
     },
   ]
 
+  // ── Hero pin ──────────────────────────────────────────────────────────────
   useGSAP(
     () => {
-      // 1. Pin de la sección inicial (hero).
-      // Cuando su parte inferior llega a la parte inferior de la ventana, se fija.
-      // 'pinSpacing: false' permite que la siguiente sección pase por encima.
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: 'bottom bottom',
-        // Se mantiene pinneado la misma distancia que mide la siguiente sección (100vh)
-        end: () =>
-          `+=${nextSectionRef.current?.offsetHeight || window.innerHeight}`,
+        end: () => `+=${window.innerHeight}`,
         pin: true,
         pinSpacing: false,
       })
+    },
+    { scope: containerRef },
+  )
 
-      // 2. Pin del siguiente contenedor.
-      // Cuando su parte superior llega a la parte superior de la ventana (completa la pantalla), se fija.
+  // ── Scroll word/image animation ───────────────────────────────────────────
+  useGSAP(
+    () => {
+      if (!nextSectionRef.current) return
+
+      const vh = window.innerHeight
+      const n  = aboutMeItems.length
+      // Timeline units: 0.5 for initial text rise + 1 per image = n + 0.5 total
+      const scrollDistance = (n + 0.5) * vh
+
+      // ── Initial states ──
+      textRefs.current.forEach((el, i) => {
+        if (!el) return
+        gsap.set(el, i === 0
+          ? { y: vh * 0.6, opacity: 0 }
+          : { y: 40, opacity: 0 })
+      })
+      imageRefs.current.forEach(el => {
+        if (!el) return
+        gsap.set(el, { y: vh })
+      })
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: nextSectionRef.current,
+          start: 'top top',
+          end: () => `+=${scrollDistance}`,
+          scrub: 1,
+        },
+      })
+
+      // t 0 → 0.5 : first phrase rises to centre
+      tl.to(textRefs.current[0], {
+        y: 0, opacity: 1,
+        ease: 'power2.out',
+        duration: 0.5,
+      }, 0)
+
+      // one image per item
+      for (let i = 0; i < n; i++) {
+        const start = 0.5 + i          // image enters
+        const mid   = start + 0.5      // image at screen centre → phrase changes
+
+        // image travels from bottom (+vh) to top (-vh) over 1 unit of scroll
+        tl.fromTo(
+          imageRefs.current[i],
+          { y: vh },
+          { y: -vh, ease: 'none', duration: 1 },
+          start,
+        )
+
+        // phrase transition at midpoint
+        if (i < n - 1) {
+          tl.to(textRefs.current[i],
+            { opacity: 0, y: -40, duration: 0.12 },
+            mid - 0.06,
+          )
+          tl.fromTo(textRefs.current[i + 1],
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.12 },
+            mid - 0.06,
+          )
+        }
+      }
     },
     { scope: containerRef },
   )
 
   return (
     <RevealContainer className=''>
-      {/* Contenedor Hero Inicial */}
+      {/* ── Hero ── */}
       <section
         ref={containerRef}
         className='layout-wrap relative w-full flex flex-col font-sans overflow-x-hidden'>
         <div
           ref={heroRef}
-          className='relative w-full h-[200svh] z-10'>
-          <section className=' z-10 layout-grid mix-blend-difference h-[100svh]'>
-            <h1 className='text-h3 select-none w-full col-span-8 col-start-2 pt-36 '>
-              En el juego desde hace ya 4 años, <br/>actualemente me encuentro
-              viviendo en Argentina Buenos Aires, <br/>y me dedico a crear
-              experiencias y productos digitales.
+          className='relative w-full h-[150svh] md:h-[200svh] z-10'>
+          <section className='z-10 layout-grid mix-blend-difference h-[75svh] md:h-[100svh]'>
+            <h1 className='text-[clamp(5rem,17vw,18rem)] font-semibold tracking-[-0.04em] select-none w-full col-span-full col-start-1 pt-36 overflow-hidden whitespace-nowrap'>
+              About me
             </h1>
           </section>
-          <section className=' layout-grid text-white h-[100svh] flex flex-col  justify-end  '>
-            <h1 className='text-h3 w-full col-span-5 col-start-7 self-end pb-32  text-end'>
-              Entusiasma en crear experiencias memorables<br/> , apalancandome de la
-              web o de tu celular,<br/> usando diseños creativos,<br/> e tecnologias
-              novedosas.
+          <section className='layout-grid text-white h-[60svh] md:h-[100svh] flex flex-col justify-end'>
+            <h1 className='mix-blend-difference text-h3 w-full col-span-3 col-start-2 self-end pb-32 text-end md:col-span-5 md:col-start-7'>
+              Entusiasma en crear experiencias memorables
+              <br />, apalancandome de la web o de tu celular,
+              <br /> usando diseños creativos,
+              <br /> e tecnologias novedosas.
             </h1>
           </section>
-          <section className='absolute inset-0 w-full h-full  flex items-center justify-center -z-10 '>
-            <div className=' bg-white flex items-center w-2/3  h-2/3  justify-center relative overflow-hidden'>
+          <section className='absolute top-0 w-full h-full flex items-center justify-center -z-10'>
+            <div className='relative overflow-hidden w-full h-[150svh] md:w-2/3 md:h-2/3 md:bg-white -translate-y-10 md:-translate-y-32'>
               <Image
                 src='/images/hero.JPEG'
                 alt='hero'
                 fill
-                className='object-cover'
+                className='object-contain object-center md:object-cover'
               />
             </div>
           </section>
         </div>
       </section>
 
-      {/* Siguiente Sección */}
+      {/* ── Scroll word / image section ── */}
       <section
         ref={nextSectionRef}
-        className='relative z-20 w-full layout-grid h-[100svh] bg-bg-secondary overflow-hidden'>
-        <div className='col-span-5 relative h-full w-full '>
-          {aboutMeItems.map((item, index) => (
+        className='relative z-20 w-full bg-white'
+        style={{ height: `${(aboutMeItems.length + 1.5) * 100}vh` }}>
+
+        {/* sticky viewport — stays in view while outer section scrolls */}
+        <div className='sticky top-0 h-screen overflow-hidden flex items-center justify-center'>
+
+          {/* Images — small square, centred */}
+          {aboutMeItems.map((item, i) => (
             <div
-              key={index}
-              className={`absolute top-0 left-0 h-full w-full transition-opacity duration-500 ease-in-out ${
-                hoveredIndex === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
-              }`}>
+              key={`img-${i}`}
+              ref={el => { imageRefs.current[i] = el }}
+              className='absolute z-0'
+              style={{ width: '50vmin', height: '50vmin' }}>
               <Image src={item.image} fill alt='' className='object-cover' />
             </div>
           ))}
-        </div>
-        <div className='col-span-7 flex flex-col justify-start pt-8 pr-8 h-full z-20 pointer-events-none'>
-          <ul className='flex flex-col  text-end w-full'>
-            {aboutMeItems.map((item, index) => (
-              <li
-                key={index}
-                onMouseEnter={() => setHoveredIndex(index)}
-                className={`text-h3 transition-opacity duration-300 pointer-events-auto cursor-default text-bg ${
-                  hoveredIndex === index ? 'opacity-100' : 'opacity-35'
-                }`}>
-                {item.text}
-              </li>
-            ))}
-          </ul>
+
+          {/* Phrases — centred, on top */}
+          {aboutMeItems.map((item, i) => (
+            <div
+              key={`text-${i}`}
+              ref={el => { textRefs.current[i] = el }}
+              className='absolute z-10 text-center px-8 text-black mix-blend-difference'>
+              {item.text}
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Sección Objetivos Anuales (Pin) */}
-      <section className='relative w-full z-10 layout-grid bg-bg text-bg-secondary items-start border-t border-bg/10'>
-        {/* Lado Izquierdo Pinned */}
-        <div className='col-span-12 md:col-span-6 sticky top-0 h-[100vh] flex flex-col justify-between  pl-16 pt-32  '>
-          <div className='flex flex-col gap-12'>
-            
-            <h2 className='text-h4 font-light max-w-xl'>
-              <span className='inline-block w-6 h-6 rounded-full bg-bg mr-4 mb-2 align-middle'></span>
-              Antecedentes en Website design, application design, interactive design,
-              prototyping, ecommerce. Pero el foco este año es el desarrollo de
-              software
-            </h2>
-          </div>
+      {/* ── Objetivos Anuales ── */}
+      <section className='relative w-full z-10 layout-grid text-bg-secondary items-start border-t border-bg/10' style={{ background: 'linear-gradient(to bottom, var(--color-bg), #0a0a0a)' }}>
 
-          <div className='w-full max-w-[300px] h-[350px] overflow-hidden mix-blend-darken opacity-90 pb-8 relative'>
+        {/* Left col — sticky on desktop, normal flow on mobile */}
+        <div className='col-span-full md:col-span-6 flex flex-col items-center md:items-start md:justify-between md:sticky md:top-0 md:h-[100vh] text-center md:text-left gap-10 md:gap-0 px-6 py-16 md:pl-16 md:py-0 md:pt-32'>
+          <h2 className='text-h4 font-light md:max-w-xl'>
+            
+            Antecedentes en Website design, application design, interactive
+            design, prototyping, ecommerce. Pero el foco este año es el
+            desarrollo de software
+          </h2>
+          <div className='w-full max-w-[260px] md:max-w-[300px] h-[260px] md:h-[350px] overflow-hidden  opacity-90 md:pb-8 relative'>
             <Image
               src='/images/AboutMe.gif'
               alt='illustration placeholder'
@@ -229,21 +258,19 @@ const AboutMePage = () => {
           </div>
         </div>
 
-        {/* Lado Derecho Escroleable */}
-        <div className='col-span-12 md:col-span-6 md:col-start-9 flex flex-col pt-8 pb-[20vh]'>
+        {/* Right col — scrollable goals */}
+        <div className='col-span-full md:col-span-6 md:col-start-9 flex flex-col pb-16 md:pb-[20vh]'>
           {annualGoals.map((goal, index) => (
             <div
               key={index}
-              className='flex flex-col lg:flex-row gap-4 lg:gap-16 py-24 border-b border-bg/10 last:border-none'>
-              <div className='text-2xl font-light w-12 shrink-0'>{goal.id}</div>
-              <div className='flex flex-col gap-8'>
-                <h3 className='text-4xl md:text-5xl tracking-[-0.04em] font-normal'>
-                  {goal.title}
-                </h3>
-                <p className='text-lg leading-[1.65] opacity-75 font-light max-w-sm'>
-                  {goal.description}
-                </p>
-              </div>
+              className='flex flex-col gap-6 py-12 md:py-24 px-6 md:px-0 border-b border-bg/10 last:border-none text-center md:text-left'>
+              <div className='text-2xl font-light opacity-50'>{goal.id}</div>
+              <h3 className='text-4xl md:text-5xl tracking-[-0.04em] font-normal'>
+                {goal.title}
+              </h3>
+              <p className='text-lg leading-[1.65] opacity-75 font-light max-w-sm mx-auto md:mx-0'>
+                {goal.description}
+              </p>
             </div>
           ))}
         </div>

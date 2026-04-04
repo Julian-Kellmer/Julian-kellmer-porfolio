@@ -13,6 +13,18 @@
   transition: color 0.3s ease;
 }
 
+@media (max-width: 767px) {
+  .header {
+    justify-content: flex-start;
+    padding: 0 12px;
+  }
+
+  .menuLabel {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 /* When menu is open, flip text colour so button reads clearly on dark overlay */
 .headerMenuOpen {
   color: #fff;
@@ -43,7 +55,7 @@
 .menuBtn {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  
   gap: 5px;
  
   border: none;
@@ -51,7 +63,6 @@
   cursor: pointer;
   color: inherit;
   transition: opacity 0.25s ease;
-  border-radius: 50px;
 }
 
 .menuBtn:hover {

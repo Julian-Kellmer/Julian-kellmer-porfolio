@@ -4,15 +4,17 @@ import { useEffect, useRef, useState } from 'react'
 import { usePageTransition } from '../../context/TransitionContext'
 import Experience from '../../webgl/core/Experience'
 import styles from './InfinityGallery.module.css'
-import ProjectList from './ProjectList'
 import { getProjects } from '../../lib/supabase'
+
+const SKELETON_COUNT = 15
 
 function GalleryContent() {
   const canvasRef = useRef(null)
   const experienceRef = useRef(null)
   const [errorDetails, setErrorDetails] = useState('')
-  const [view, setView] = useState('grid') // 'grid' | 'list'
   const [projects, setProjects] = useState([])
+  const [skeletonVisible, setSkeletonVisible] = useState(true)
+  const [skeletonMounted, setSkeletonMounted] = useState(true)
 
   const { navigate } = usePageTransition()
 
@@ -33,10 +35,12 @@ function GalleryContent() {
     try {
       if (canvasRef.current && !experienceRef.current) {
         experienceRef.current = new Experience(canvasRef.current, projects)
+        setSkeletonVisible(false)
       }
     } catch (err) {
       console.error('WebGL Setup Error:', err)
       setErrorDetails(err.toString() + '\n' + err.stack)
+      setSkeletonVisible(false)
     }
 
     return () => {
@@ -46,11 +50,6 @@ function GalleryContent() {
       }
     }
   }, [projects])
-
-  const handleViewChange = (newView) => {
-    setView(newView)
-    // TODO: conectar a experienceRef.current.setView(newView)
-  }
 
   return (
     <div className={styles.galleryContainer}>
@@ -67,50 +66,57 @@ function GalleryContent() {
         </div>
       )}
       <div
-        className=' bg-bg text-text text-h1 absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none'
+        className=" bg-bg text-text text-h1 absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none"
         style={{ zIndex: 0 }}>
         <h1>Some of my work</h1>
       </div>
       <canvas
         ref={canvasRef}
-        className={`${styles.canvas} `}
+        className={styles.canvas}
         style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
       />
 
-      {/* ─── List overlay ─── */}
-      <ProjectList projects={projects} visible={view === 'list'} />
+      {/* ─── Skeleton overlay ─── */}
+      {skeletonMounted && (
+        <div
+          className={`${styles.skeleton} ${!skeletonVisible ? styles.skeletonHidden : ''}`}
+          onTransitionEnd={() => !skeletonVisible && setSkeletonMounted(false)}>
+          {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+            <div
+              key={i}
+              className={styles.skeletonCard}
+              style={{ '--delay': `${(i * 0.12) % 1.2}s` }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* ─── View Toggle ─── */}
       <div className={styles.viewToggle} role="group" aria-label="Cambiar vista">
-        {/* Grid */}
-        <button
-          id="toggle-grid"
-          className={`${styles.toggleOption} ${view === 'grid' ? styles.toggleOptionActive : ''}`}
-          onClick={() => handleViewChange('grid')}
+        {/* Grid — active (this IS the grid view) */}
+        <span
+          className={`${styles.toggleOption} ${styles.toggleOptionActive}`}
           aria-label="Vista grilla"
-          aria-pressed={view === 'grid'}>
+          aria-current="true">
           <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="1" y="1" width="6.5" height="6.5" rx="1.5" fill="currentColor"/>
-            <rect x="10.5" y="1" width="6.5" height="6.5" rx="1.5" fill="currentColor"/>
-            <rect x="1" y="10.5" width="6.5" height="6.5" rx="1.5" fill="currentColor"/>
-            <rect x="10.5" y="10.5" width="6.5" height="6.5" rx="1.5" fill="currentColor"/>
+            <rect x="1" y="1" width="6.5" height="6.5" rx="1.5" fill="currentColor" />
+            <rect x="10.5" y="1" width="6.5" height="6.5" rx="1.5" fill="currentColor" />
+            <rect x="1" y="10.5" width="6.5" height="6.5" rx="1.5" fill="currentColor" />
+            <rect x="10.5" y="10.5" width="6.5" height="6.5" rx="1.5" fill="currentColor" />
           </svg>
-        </button>
-        {/* List */}
+        </span>
+        {/* List — navigates to /gallery/list */}
         <button
-          id="toggle-list"
-          className={`${styles.toggleOption} ${view === 'list' ? styles.toggleOptionActive : ''}`}
-          onClick={() => handleViewChange('list')}
-          aria-label="Vista lista"
-          aria-pressed={view === 'list'}>
+          className={styles.toggleOption}
+          onClick={() => navigate('/gallery/list')}
+          aria-label="Vista lista">
           <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="1" y="2" width="16" height="2.5" rx="1.25" fill="currentColor"/>
-            <rect x="1" y="7.75" width="16" height="2.5" rx="1.25" fill="currentColor"/>
-            <rect x="1" y="13.5" width="16" height="2.5" rx="1.25" fill="currentColor"/>
+            <rect x="1" y="2" width="16" height="2.5" rx="1.25" fill="currentColor" />
+            <rect x="1" y="7.75" width="16" height="2.5" rx="1.25" fill="currentColor" />
+            <rect x="1" y="13.5" width="16" height="2.5" rx="1.25" fill="currentColor" />
           </svg>
         </button>
       </div>
-
     </div>
   )
 }

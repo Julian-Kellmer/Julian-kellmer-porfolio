@@ -59,41 +59,67 @@ const Header = () => {
     <>
       <header
         className={`${styles.header} ${menuOpen ? styles.headerMenuOpen : ''}`}>
-        {/* Left – Logo */}
-        <div className={styles.logoWrapper}>
-          <TransitionLink href='/' onClick={handleClose}>
-            <Image
-              src='/logoTerminado.svg'
-              alt='Julian Kellmer logo'
-              width={64}
-              height={64}
-              priority
-              className={styles.logo}
-            />
-          </TransitionLink>
+
+        {/* Mobile: 3 equal cols — Contact | Logo | Menu */}
+        {/* Desktop: Logo left, buttons right */}
+
+        {/* ── Mobile: Contact (left) ── hidden on desktop */}
+        <button
+          className={`${styles.menuBtn} ${contactOpen ? styles.menuBtnOpen : ''} flex-1 text-body  text-secondary md:hidden`}
+
+          onClick={() => { setContactOpen(true); setMenuOpen(false) }}
+          aria-label='Open Contact'>
+          <span className={styles.menuLabel}>Contact</span>
+        </button>
+
+        {/* ── Logo: center on mobile, left on desktop ── */}
+        <div
+          className={styles.logoWrapper}
+          style={{ flex: 1, display: 'flex', justifyContent: 'center' }}
+          /* desktop overrides via md: below */
+        >
+          {/* on desktop push logo to the left inside its flex-1 slot */}
+          <div className='md:mr-auto'>
+            <TransitionLink href='/' onClick={handleClose}>
+              <Image
+                src='/logoTerminado.svg'
+                alt='Julian Kellmer logo'
+                width={64}
+                height={64}
+                priority
+                className={styles.logo}
+              />
+            </TransitionLink>
+          </div>
         </div>
 
-        {/* Right – Open / Close Menu button */}
-        <div className='flex gap-4'>
+        {/* ── Desktop right cluster ── hidden on mobile */}
+        <div className='hidden md:flex gap-4'>
           <button
             className={`${styles.menuBtn} ${contactOpen ? styles.menuBtnOpen : ''} text-body text-secondary`}
-            onClick={() => {
-              setContactOpen(true)
-              setMenuOpen(false)
-            }}
+            onClick={() => { setContactOpen(true); setMenuOpen(false) }}
             aria-label='Open Contact'>
             <span className={styles.menuLabel}>Contact</span>
           </button>
           <button
-            className={`${styles.menuBtn} ${menuOpen ? styles.menuBtnOpen : ''} text-body  text-secondary  `}
+            className={`${styles.menuBtn} ${menuOpen ? styles.menuBtnOpen : ''} text-body text-secondary`}
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}>
-            <span className={styles.menuLabel}>
-              {menuOpen ? 'Close Menu' : 'Open Menu'}
-            </span>
+            <span className={styles.menuLabel}>{menuOpen ? 'Close Menu' : 'Open Menu'}</span>
           </button>
         </div>
+
+        {/* ── Mobile: Menu (right) ── hidden on desktop */}
+        <button
+          className={`${styles.menuBtn} ${menuOpen ? styles.menuBtnOpen : ''} text-body text-secondary md:hidden`}
+          style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', paddingRight: 0 }}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}>
+          <span className={styles.menuLabel}>{menuOpen ? 'Close' : 'Menu'}</span>
+        </button>
+
       </header>
 
       {/* ── Fullscreen Nav Overlay ── */}
@@ -168,45 +194,34 @@ const Header = () => {
           </svg>
         </button>
 
-        <div className='w-full max-w-5xl px-6 flex flex-col'>
+        <div className='w-full max-w-5xl px-4 md:px-6 flex flex-col'>
           <div className='flex items-center gap-3 text-white/50 text-small'>
             <span className='w-1.5 h-1.5 rounded-full border border-white/50'></span>
             Hablemos
           </div>
-          <h2 className='text-white text-4xl md:text-[5rem] leading-[1.1] font-medium tracking-tight mb-16 max-w-2xl'>
+          <h2 className='text-white text-2xl md:text-[5rem] leading-[1.1] font-medium tracking-tight mb-6 md:mb-16 max-w-2xl'>
             ¡Hola! Es un gusto conocerte.
           </h2>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div className='grid grid-cols-2 gap-3 md:gap-6'>
             {/* Card 1: Email */}
             <a
               href='https://mail.google.com/mail/?view=cm&fs=1&to=kellmer002@gmail.com'
               target='_blank'
               rel='noopener noreferrer'
-              className='group relative rounded-3xl bg-white/[0.04] border border-white/10 p-10 flex flex-col justify-between min-h-[300px] md:min-h-[340px] hover:bg-white/[0.08] hover:scale-[1.02] transition-all duration-300'>
-              <div className='flex flex-col gap-8'>
-                <div className='flex items-center gap-3 text-body'>
-                  <span className='text-body w-2 h-2 rounded-full bg-white'></span>
+              className='group relative rounded-2xl md:rounded-3xl bg-white/[0.04] border border-white/10 p-4 md:p-10 flex flex-col justify-between min-h-[160px] md:min-h-[340px] hover:bg-white/[0.08] hover:scale-[1.02] transition-all duration-300'>
+              <div className='flex flex-col gap-3 md:gap-8'>
+                <div className='flex items-center gap-2 md:gap-3 text-xs md:text-body'>
+                  <span className='w-1.5 h-1.5 rounded-full bg-white'></span>
                   colaboremos
                 </div>
-                <h3 className='text-white text-3xl md:text-4xl font-normal tracking-tight pr-8 leading-snug'>
+                <h3 className='text-white text-base md:text-4xl font-normal tracking-tight leading-snug'>
                   Me interesa trabajar juntos.
                 </h3>
               </div>
-              <div className='w-14 h-14 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors mt-8'>
-                <svg
-                  width='20'
-                  height='20'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M5 12H19M19 12L12 5M19 12L12 19'
-                    stroke='currentColor'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
+              <div className='w-8 h-8 md:w-14 md:h-14 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors mt-4 md:mt-8'>
+                <svg width='14' height='14' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path d='M5 12H19M19 12L12 5M19 12L12 19' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
                 </svg>
               </div>
             </a>
@@ -216,30 +231,19 @@ const Header = () => {
               href='https://wa.me/541166161929'
               target='_blank'
               rel='noopener noreferrer'
-              className='group relative rounded-3xl bg-white/[0.04] border border-white/10 p-10 flex flex-col justify-between min-h-[300px] md:min-h-[340px] hover:bg-white/[0.08] hover:scale-[1.02] transition-all duration-300'>
-              <div className='flex flex-col gap-8'>
-                <div className='flex items-center gap-3 text-body'>
-                  <span className='text-body w-2 h-2 rounded-full bg-white'></span>
+              className='group relative rounded-2xl md:rounded-3xl bg-white/[0.04] border border-white/10 p-4 md:p-10 flex flex-col justify-between min-h-[160px] md:min-h-[340px] hover:bg-white/[0.08] hover:scale-[1.02] transition-all duration-300'>
+              <div className='flex flex-col gap-3 md:gap-8'>
+                <div className='flex items-center gap-2 md:gap-3 text-xs md:text-body'>
+                  <span className='w-1.5 h-1.5 rounded-full bg-white'></span>
                   Contactame
                 </div>
-                <h3 className='text-white text-3xl md:text-4xl font-normal tracking-tight pr-8 leading-snug'>
+                <h3 className='text-white text-base md:text-4xl font-normal tracking-tight leading-snug'>
                   Hablemos.
                 </h3>
               </div>
-              <div className='w-14 h-14 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors mt-8'>
-                <svg
-                  width='20'
-                  height='20'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M5 12H19M19 12L12 5M19 12L12 19'
-                    stroke='currentColor'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
+              <div className='w-8 h-8 md:w-14 md:h-14 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors mt-4 md:mt-8'>
+                <svg width='14' height='14' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path d='M5 12H19M19 12L12 5M19 12L12 19' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
                 </svg>
               </div>
             </a>
